@@ -42,5 +42,5 @@ def part2(data):
                 c += 1
     return c
 
-# print(part1(data))
+print(part1(data))
 print(part2(data))
