@@ -23,6 +23,7 @@ def part1(data):
         for i in range(0, (px // bx) + 1):
             j = (px - (bx * i)) / (ax)
             if int(j) == j and ((ay * j) + (by * i) == py):
+                j = int(j)
                 best = min(best, i + (3*j)) 
         if best != inf:
             s += best
@@ -31,25 +32,16 @@ def part1(data):
 
 def part2(data):
     s = 0
-    # for ((ax, ay), (bx, by), (px, py)) in data:
-    #     px += 10000000000000
-    #     py += 10000000000000
-    #     best = inf
+    for ((ax, ay), (bx, by), (px, py)) in data:
+        px += 10000000000000
+        py += 10000000000000
+        j = ((px * ay) - (ax * py)) /  ((ay * bx) - (ax * by))
+        i = (px - (bx * j)) / ax
 
-    #     # m = ax * bx
-    #     # r = (px // m)
-    #     # c = min(3 * bx, ax) * r
-    #     # px2 = px % m
-    #     # py2 = 
+        if j == int(j) and i == int(i):
+            s += (i * 3 + j)
 
-
-    #     for i in range(0, (px2 // bx) + 1):
-    #         j = (px2 - (bx * i)) / (ax)
-    #         if int(j) == j and ((ay * j) + (by * i) == py):
-    #             best = min(best, i + (3*j))
-    #     if best != inf:
-    #         s += best
     return int(s)
 
-# print(part1(data))
+print(part1(data))
 print(part2(data))
