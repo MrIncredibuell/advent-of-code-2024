@@ -109,14 +109,19 @@ def do_move(grid, location, direction):
         else:
             do_move(grid, (x, y + dy), direction)
             do_move(grid, (x + 1, y + dy), direction)
+            grid[(x, y + dy + dy)] = "["
+            grid[(x + 1, y + dy + dy)] = "]"
             grid[(x, y + dy)] = "["
             grid[(x + 1, y + dy)] = "]"
+
 
     elif spot == "]":
         if direction == ">":
             raise NotImplemented("SHOULD BE IMPOSSIBLE")
         elif direction == "<":
-            return can_move(grid, (x + dx - 1, y), direction)
+            do_move(grid, (x + dx - 1, y))
+            grid[(x + dx, y)] = "]"
+            grid[(x, y)] = "."
         else:
             return can_move(grid, (x, y + dy), direction) and can_move(
                 grid, (x - 1, y + dy), direction
