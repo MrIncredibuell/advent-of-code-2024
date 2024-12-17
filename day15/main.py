@@ -1,3 +1,5 @@
+from copy import copy
+
 chunks = open("input.txt").read().split("\n\n")
 
 grid = {}
@@ -63,14 +65,14 @@ def can_move(grid, location, direction):
         if direction == ">":
             return can_move(grid, (x + dx + 1, y), direction)
         elif direction == "<":
-            raise NotImplemented("SHOULD BE IMPOSSIBLE")
+            raise NotImplementedError("SHOULD BE IMPOSSIBLE")
         else:
             return can_move(grid, (x, y + dy), direction) and can_move(
                 grid, (x + 1, y + dy), direction
             )
     elif spot == "]":
         if direction == ">":
-            raise NotImplemented("SHOULD BE IMPOSSIBLE")
+            raise NotImplementedError("SHOULD BE IMPOSSIBLE")
         elif direction == "<":
             return can_move(grid, (x + dx - 1, y), direction)
         else:
@@ -97,38 +99,54 @@ def do_move(grid, location, direction):
         dx = -1
 
     if (spot := grid[(x + dx, y + dy)]) == ".":
-        grid[(x + dx, y + dy)] = grid[(x, y)]
-        grid[x, y] = "."
+        pass
     elif spot == "[":
         if direction == ">":
-            do_move(grid, (x + dx + 1, y))
-            grid[(x + dx, y)] = "["
-            grid[(x, y)] = "."
+            do_move(grid, (x + dx + 1, y), direction)
+            grid[(x + 2 * dx, y)] = "["
+            grid[(x + 3 * dx, y)] = "]"
+            grid[(x + dx, y + dy)] = "."
         elif direction == "<":
-            raise NotImplemented("SHOULD BE IMPOSSIBLE")
+            raise NotImplementedError("SHOULD BE IMPOSSIBLE")
         else:
             do_move(grid, (x, y + dy), direction)
             do_move(grid, (x + 1, y + dy), direction)
-            grid[(x, y + dy + dy)] = "["
-            grid[(x + 1, y + dy + dy)] = "]"
-            grid[(x, y + dy)] = "["
-            grid[(x + 1, y + dy)] = "]"
-
-
+            grid[(x, y + 2 * dy)] = "["
+            grid[(x + 1, y + 2 * dy)] = "]"
+            grid[(x, y + dy)] = "."
+            grid[(x + 1, y + dy)] = "."
     elif spot == "]":
         if direction == ">":
-            raise NotImplemented("SHOULD BE IMPOSSIBLE")
+            raise NotImplementedError("SHOULD BE IMPOSSIBLE")
         elif direction == "<":
-            do_move(grid, (x + dx - 1, y))
-            grid[(x + dx, y)] = "]"
-            grid[(x, y)] = "."
+            do_move(grid, (x + dx - 1, y), direction)
+            grid[(x + 2 * dx, y)] = "]"
+            grid[(x + 3 * dx, y)] = "["
+            grid[(x + dx, y + dy)] = "."
         else:
-            return can_move(grid, (x, y + dy), direction) and can_move(
-                grid, (x - 1, y + dy), direction
-            )
+            do_move(grid, (x, y + dy), direction)
+            do_move(grid, (x - 1, y + dy), direction)
+            grid[(x, y + 2 * dy)] = "]"
+            grid[(x - 1, y + 2 * dy)] = "["
+            grid[(x, y + dy)] = "."
+            grid[(x - 1, y + dy)] = "."
+    grid[(x + dx, y + dy)] = grid[(x,y)]
+    grid[(x,y)] = "."
 
-    return False
+    return (x + dx, y + dy)
 
+
+def print_grid(grid):
+    width, height = max(grid.keys())
+    width += 1
+    height += 1
+    s = ""
+    for i in range(height):
+        for j in range (width):
+            s += grid.get((j, i), "?")
+        s += "\n"
+    print(s)
+    
 
 def part2(grid, moves):
     new_grid = {}
@@ -148,13 +166,17 @@ def part2(grid, moves):
     grid = new_grid
     (x, y) = next(k for k, v in grid.items() if v == "@")
 
-    for move in moves:
+    for move in moves[:]:
         if can_move(grid, (x, y), move):
-            do_move(grid, (x, y), move)
+            x, y = do_move(grid, (x, y), move)
 
     s = 0
+    for (i, j), v in sorted(grid.items()):
+        if v == "[":
+            score = i + 100 * j
+            s += score
     return s
 
 
-print(part1(grid, moves))
-print(part2(grid, moves))
+print(part1(copy(grid), moves))
+print(part2(copy(grid), moves))
