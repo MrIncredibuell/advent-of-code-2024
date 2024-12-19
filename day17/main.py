@@ -70,58 +70,31 @@ def part1(data):
     return ",".join([str(i) for i in data._output])
 
 
-def part2(data):
-    i = 1
-    best = []
-    # for i in range(10):
-    while True:
-        cpu = deepcopy(data)
-        cpu.a = i
-        cpu.quine = True
-        cpu._output = []
-        try:
-            # print(cpu)
-            while cpu.step():
-                # print(cpu)
-                pass
-            # print(cpu, cpu._output)
-            # if cpu._output == cpu.program:
-            #     return i
-        except ValueError:
-            pass
-            # return
-        if len(cpu._output) - 1 >= len(best):
-            best = cpu._output[:-1]
-            if len(best) == 3:
-                print(i, len(best))
-                return
-        # print(i, cpu._output)
-        i += 1
-    
+def run(A):
+    return ((((A % 8) ^ 1)) ^ 4 ^ (A // (2 ** ((A % 8) ^ 1)))) % 8
 
-# print(part1(deepcopy(data)))
+def part2(data):
+    program = data.program
+    index = 0
+    product = 0
+
+    while index < len(program):
+        index += 1
+        goal = program[-index]
+        i = 0
+        while run(product+i) != goal:
+            i += 1
+        product += i
+        product *= 8
+    A = product
+
+    output = []
+    while A:
+        output.append(run(A))
+        A = A // 8
+    # print(output)
+    return product // 8
+
+print(part1(deepcopy(data)))
 print(part2(deepcopy(data)))
 
-# def foo(A):
-#     C = A // (2 ** ((A % 8) ^ 1))
-#     B = 
-
-'''
-A % 8 -> B
-B ^ 1 -> B
-A // 2 ** B -> C
-A // 8 -> A
-B ^ 4 -> B
-B ^ C -> B
-print B % 8
-JUMP
-
-
-
-
-A = A // 8
-B = (2 ** ((A % 8) ^ 1)) ^ 4 ^ (A // (2 ** ((A % 8) ^ 1)))
-C = A // (2 ** ((A % 8) ^ 1))
-
-((((A % 8) ^ 1)) ^ 4 ^ (A // (2 ** ((A % 8) ^ 1)))) % 8
-'''

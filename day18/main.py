@@ -65,7 +65,7 @@ def part2(data):
     a = 1
     while True:
         grid = {k: "#" for k in data[:a]}
-        if (res := solve(grid)) is None:
+        if (solve(grid)) is None:
             return data[a-1]
         a += 1
 
